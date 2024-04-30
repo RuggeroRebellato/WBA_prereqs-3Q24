@@ -1,6 +1,8 @@
 use anchor_lang::prelude::*;
 
-declare_id!("8BVn1ckthXvzE1fg4M1MeaVpzkfzdLmVobGPQi3LXbEz");
+declare_id!("WBA52hW35HZU5R2swG57oehbN2fTr7nNhNDgfjnqUoZ");
+
+const ACCOUNT_SIZE: usize = 8 + 32 + 4 + 39; // discriminator + pubkey + vec size + u8*38
 
 #[program]
 mod wba_prereq {
@@ -73,8 +75,8 @@ fn validate_github_username(bytes: &[u8]) -> bool {
 pub struct Complete<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
-    #[account(init, payer = signer, seeds = [b"prereq", signer.key().as_ref()], bump, space = PrereqAccount::LEN)]
-    pub prereq: Account<'info, PrereqAccount>,
+    #[account(init, payer = signer, seeds = [b"prereq", signer.key().as_ref()], bump, space = ACCOUNT_SIZE)]
+    pub prereq: Account<'info, Q2Prereq2024>,
     pub system_program: Program<'info, System>,
 }
 
@@ -84,18 +86,26 @@ pub struct Update<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(mut, constraint = prereq.key == signer.key())]
-    pub prereq: Account<'info, PrereqAccount>,
+    pub prereq: Account<'info, Q2Prereq2024>,
     pub system_program: Program<'info, System>,
 }
 
 #[account]
-pub struct PrereqAccount {
+pub struct Q2Prereq2024 {
     github: Vec<u8>,
     key: Pubkey,
 }
 
-impl PrereqAccount {
-    const LEN: usize = 8 + 32 + 4 + 39; // discriminator + pubkey + vec size + u8*38
+#[account]
+pub struct Q3Prereq2024 {
+    github: Vec<u8>,
+    key: Pubkey,
+}
+
+#[account]
+pub struct Q4Prereq2024 {
+    github: Vec<u8>,
+    key: Pubkey,
 }
 
 #[error_code]
