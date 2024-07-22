@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("WBA52hW35HZU5R2swG57oehbN2fTr7nNhNDgfjnqUoZ");
+declare_id!("WBAQSygkwMox2VuWKU133NxFrpDZUBdvSBeaBEue2Jq");
 
 const ACCOUNT_SIZE: usize = 8 + 32 + 4 + 39; // discriminator + pubkey + vec size + u8*38
 
@@ -29,6 +29,9 @@ mod wba_prereq {
         let len = github.len().min(39); // Ensure we don't exceed array length
         username[0..len].copy_from_slice(&github[0..len]);
         ctx.accounts.prereq.github = username.to_vec();
+        Ok(())
+    }
+    pub fn clean(ctx: Context<Close>) -> Result<()> {
         Ok(())
     }
 }
@@ -88,6 +91,14 @@ pub struct Update<'info> {
     #[account(mut, constraint = prereq.key == signer.key())]
     pub prereq: Account<'info, Q2Prereq2024>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Close<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    #[account(mut,close= signer)]
+    pub prereq: Account<'info, Q2Prereq2024>,
 }
 
 #[account]
